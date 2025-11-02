@@ -24,10 +24,7 @@ jobs:
         ARM_CLIENT_SECRET: ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientSecret }}
         ARM_SUBSCRIPTION_ID: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
         ARM_TENANT_ID: ${{ fromJSON(secrets.AZURE_CREDENTIALS).tenantId }}
-      run: terraform init -backend-config="resource_group_name=test-demo-rg" \
-                           -backend-config="storage_account_name=testdemostorage963" \
-                           -backend-config="container_name=dev" \
-                           -backend-config="key=terraform.tfstate"
+      run: terraform init -backend-config="resource_group_name=test-demo-rg" -backend-config="storage_account_name=testdemostorage963" -backend-config="container_name=dev" -backend-config="key=terraform.tfstate"
 
     - name: Terraform Plan
       env:
