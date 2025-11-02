@@ -1,4 +1,4 @@
-name: Terraform
+name: Terraform CI/CD
 
 on:
   push:
@@ -11,32 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # 1. Checkout the repo
+      - name: Checkout Code
         uses: actions/checkout@v3
 
+      # 2. Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.0
 
+      # 3. Login to Azure using JSON creds
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # 4. Initialize Terraform backend
       - name: Terraform Init
-        run: terraform init -backend-config="storage_account_name=testdemostorage963" \
-                             -backend-config="container_name=dev" \
-                             -backend-config="key=terraform.tfstate" \
-                             -backend-config="resource_group_name=test-demo-rg" \
-                             -reconfigure
-
-      - name: Terraform Plan
-        run: terraform plan
-
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+        run: terraform init -backend-config="resource_group_name=test-demo-rg" `
+                             -backend-config="storage_account_name=testdemostorage963" `
+                             -backend-config="container_name=dev" `
+                             -backend-config="key=terraform.tfstate" `
