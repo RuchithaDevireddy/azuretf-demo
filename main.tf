@@ -1,15 +1,16 @@
-terraform {
-  required_version = ">= 1.3.0"
-
-  backend "azurerm" {
-    resource_group_name   = "test-demo-rg"
-    storage_account_name  = "testdemostorage963"
-    container_name        = "dev"
-    key                   = "terraform.tfstate"
-    use_azuread_auth      = true
-  }
-}
-
 provider "azurerm" {
   features {}
+}
+
+resource "azurerm_resource_group" "rg" {
+  name     = var.resource_group_name
+  location = var.location
+}
+
+resource "azurerm_storage_account" "storage" {
+  name                     = var.storage_account_name
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
 }
