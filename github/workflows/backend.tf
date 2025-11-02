@@ -1,0 +1,10 @@
+terraform {
+  backend "azurerm" {
+   resource_group_name   = "test-demo-rg"
+   storage_account_name  = "testdemostorage963"
+   container_name        = "dev"
+   key                   = "terraform.tfstate"
+   use_azuread_auth      = true
+   subscription_id      = "23804002-cbd4-473c-972d-2fffa924c8aa"
+  }
+}
