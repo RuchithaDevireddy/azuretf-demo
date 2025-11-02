@@ -1,7 +1,7 @@
 name: 'Deploy Terraform to Azure'
 
 on:
- workflow_dispatch:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -29,7 +29,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Terraform Init
-        run: terraform init -backend-config="backend.tf"
+        run: terraform init 
 
       # Terraform Validate
 
