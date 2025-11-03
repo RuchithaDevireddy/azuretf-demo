@@ -13,3 +13,4 @@ variable "environment" {
 variable "storage_account_name" {
   default = "tfstatestorage1934" # must be globally unique!
 }
+variable "client_secret" {}
