@@ -20,6 +20,11 @@ jobs:
       with:
         terraform_version: 1.7.0
 
+    - name: Az login
+      uses: Azure/login@v2.0.0
+      continue-on-error: false
+      with:
+         creds: ${{ secrets.AZURE_CREDENTIALS }}
     # Step 3: Terraform Init with Azure backend
     - name: Terraform Init
       env:
