@@ -35,7 +35,8 @@ jobs:
       uses: Azure/login@v2.0.0
       continue-on-error: false
       with:
-         creds: ${{ secrets.AZURE_CREDENTIALS }}
+         creds: '{"clientId":"${{ env.AZURE_CLIENT_ID }}","clientSecret":"${{ env.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ env.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ env.AZURE_TENANT_ID }}"}'
+
 
     # Step 3: Terraform Init with Azure backend
     - name: Terraform Init
