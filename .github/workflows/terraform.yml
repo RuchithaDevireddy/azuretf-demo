@@ -36,6 +36,10 @@ jobs:
       continue-on-error: false
       with:
          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # 4️⃣ Set environment variable for backend config
+    - name: Set Environment
+      run: echo "ENVIRONMENT=${{ github.event.inputs.environments }}" >> $GITHUB_ENV
     # Step 3: Terraform Init with Azure backend
     - name: Terraform Init
       env:
@@ -43,7 +47,7 @@ jobs:
         ARM_CLIENT_SECRET: ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientSecret }}
         ARM_SUBSCRIPTION_ID: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
         ARM_TENANT_ID: ${{ fromJSON(secrets.AZURE_CREDENTIALS).tenantId }}
-      run: terraform init -backend-config="./env/${{ inputs.environments}}/${{ inputs.environments}}.backend.conf"
+      run: terraform init -backend-config="./env/${ENVIRONMENT}/${ENVIRONMENT}.backend.conf"
 
     # Step 4: Terraform Plan
     - name: Terraform Plan
