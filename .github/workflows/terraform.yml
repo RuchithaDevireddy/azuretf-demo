@@ -1,47 +1,47 @@
-name: Terraform CI/CD
+name: Terraform Deploy to Azure
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
   terraform:
+    name: 'Terraform Plan and Apply'
     runs-on: ubuntu-latest
 
+    env:
+      # Azure ARM environment variables (loaded from repo secrets)
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
     steps:
-      # 1. Checkout code
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      # Step 1 - Checkout your repository
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # 2. Setup Terraform
+      # Step 2 - Setup Terraform
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.7.0
+          terraform_version: 1.9.8  # or whatever version you use
 
-      # 3. Set Service Principal credentials as environment variables
-      - name: Set Azure SP Environment Variables
-        run: |
-          echo "ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
-          echo "ARM_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}" >> $GITHUB_ENV
-          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
-          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
-
-      # 4. Terraform Init
+      # Step 3 - Initialize Terraform
       - name: Terraform Init
-        run: terraform init -backend-config="resource_group_name=tfstate-rg" `
-                             -backend-config="storage_account_name=tfstatestorage123" `
-                             -backend-config="container_name=tfstate" `
-                             -backend-config="key=terraform.tfstate" `
-                             -reconfigure
+        run: terraform init
 
-      # 5. Terraform Plan
+      # Step 4 - Validate Terraform configuration
+      - name: Terraform Validate
+        run: terraform validate
+
+      # Step 5 - Terraform Plan
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -out=tfplan
 
-      # 6. Terraform Apply (only on main branch)
+      # Step 6 - Terraform Apply (only on main branch)
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan
